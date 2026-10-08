@@ -77,3 +77,39 @@ LINE_CHANNEL_ACCESS_TOKEN=""
 # Google Apps Script Web App URL (สำหรับการซิงค์ Drive และ Sheets จริง)
 GAS_WEBAPP_URL=""
 ```
+
+---
+
+## ☁️ Deploy แบบอัตโนมัติบน Render + GitHub Actions
+
+โครงสร้างนี้รองรับการ deploy แบบอัตโนมัติผ่าน GitHub Actions ไปยัง Render โดยใช้ Deploy Hook
+
+### 1) สร้าง Render Web Service
+- ไปที่ https://dashboard.render.com
+- เลือก New > Web Service
+- เชื่อม repo นี้เข้ากับ Render
+- ใช้ค่าเริ่มต้นจากไฟล์ `render.yaml`
+- ตั้งค่า environment variables:
+  - `GEMINI_API_KEY`
+  - `LINE_CHANNEL_ACCESS_TOKEN`
+  - `GAS_WEBAPP_URL`
+  - `NODE_ENV=production`
+
+### 2) สร้าง GitHub Secret
+ใน GitHub repository ให้ตั้งค่า secret ชื่อ:
+
+```bash
+RENDER_DEPLOY_HOOK_URL="https://api.render.com/deploy/srv-..."
+```
+
+### 3) Auto deploy
+ทุกครั้งที่ push ไปที่ branch `main` จะทำ workflow `.github/workflows/deploy-render.yml` อัตโนมัติ และเรียก Render deploy hook ให้ deploy ใหม่ทันที
+
+### 4) Health check
+แอปมี endpoint สำหรับตรวจสอบความพร้อม:
+
+```bash
+GET /api/health
+```
+
+---
